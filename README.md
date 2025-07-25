@@ -11,9 +11,7 @@ Students upload their study material, choose quiz parameters, and receive a tail
 - **Custom Parameters**: Choose the number of questions and difficulty level.
 - **Adaptive Quiz**: (Optional/Planned) Increase difficulty based on performance.
 - **Live Quiz Experience**: One-question-at-a-time interface; next question shown after each answer.
-- **User Feedback**: Mark confusing questions.
 - **Quiz Analytics**: Score, accuracy, grade, and detailed answer review after completion.
-- **Export Results**: Download quiz analysis as PDF or CSV.
 - **Modern UI**: Clean, responsive interface.
 
 ---
@@ -68,7 +66,7 @@ Place your static files (index.html, styles.css, app.js) in the appropriate dire
 
 Open index.html in your browser (or access via http://localhost:8000/ if served via FastAPI).
 
-## 📖 Usage Flow
+## Usage Flow
 
 1. Upload Notes: Upload syllabus/notes (PDF, DOCX, TXT, etc.).
 
@@ -80,7 +78,7 @@ Open index.html in your browser (or access via http://localhost:8000/ if served 
 
 5. End Quiz: See results & analysis (score, accuracy, grade, detailed feedback).
 
-## 🧩 Folder Structure
+## Folder Structure
 
 ```
 project-root/
@@ -100,7 +98,7 @@ project-root/
 └── README.md
 ```
 
-## 📷 UI Preview
+## UI Preview
 
 ## ![App Screenshot](/img1.png)
 
@@ -112,7 +110,7 @@ project-root/
 
 ## ![App Screenshot](/img5.png)
 
-## 👏 Acknowledgements
+## Acknowledgements
 
 - Groq Cloud
 
@@ -120,7 +118,7 @@ project-root/
 
 - And all open-source contributors!
 
-## 💡 Author
+## Author
 
 Prashanth Gowda A S
 
