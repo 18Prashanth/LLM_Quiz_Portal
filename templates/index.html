@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../static/styles.css" />
+    <title>Quiz Generator</title>
+    <style>
+      /* You can move this style to your CSS file if you prefer */
+      @keyframes spin {
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .circular-chart {
+        display: block;
+        margin: 0 auto;
+        max-width: 90px;
+        max-height: 90px;
+      }
+      .circle-bg {
+        stroke: #eee;
+      }
+      .circle {
+        stroke-linecap: round;
+        transition: stroke-dasharray 1s;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Upload Page -->
+    <div id="upload-page" class="container">
+      <div class="page-wrapper">
+        <div class="page-content">
+          <div class="header">
+            <svg class="icon icon-primary" viewBox="0 0 24 24">
+              <path
+                d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+              ></path>
+              <polyline points="14,2 14,8 20,8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10,9 9,9 8,9"></polyline>
+            </svg>
+            <h1>Quiz Generator</h1>
+            <p class="subtitle">
+              Upload your syllabus or notes to generate a personalized quiz that
+              adapts to your learning needs
+            </p>
+          </div>
+
+          <div id="error-alert" class="alert alert-error hidden"></div>
+
+          <div
+            class="upload-area"
+            onclick="document.getElementById('file-input').click()"
+          >
+            <svg
+              class="icon"
+              style="color: #94a3b8; margin: 0 auto 1rem"
+              viewBox="0 0 24 24"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="17,8 12,3 7,8"></polyline>
+              <line x1="12" y1="3" x2="12" y2="15"></line>
+            </svg>
+            <input
+              type="file"
+              id="file-input"
+              accept=".pdf,.txt,.doc,.docx"
+              style="display: none"
+            />
+            <button id="upload-btn" class="btn btn-primary">
+              <span id="upload-text">Choose File</span>
+            </button>
+            <p style="color: #64748b; margin-top: 1rem; font-size: 0.9rem">
+              Supports PDF, TXT, DOC, DOCX files (Max 10MB)
+            </p>
+
+            <div
+              id="upload-success"
+              class="alert alert-success hidden"
+              style="margin-top: 1.5rem"
+            >
+              <p>✓ File uploaded successfully! Ready to generate your quiz.</p>
+              <button
+                id="continue-btn"
+                class="btn btn-secondary"
+                style="margin-top: 1rem"
+              >
+                Continue to Quiz Setup
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Config Page -->
+    <div id="config-page" class="container hidden">
+      <div class="page-wrapper">
+        <div class="page-content">
+          <div class="header">
+            <svg class="icon icon-primary" viewBox="0 0 24 24">
+              <circle cx="12" cy="12" r="10"></circle>
+              <circle cx="12" cy="12" r="6"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+            <h2>Quiz Setup</h2>
+            <p class="subtitle">
+              Configure your quiz parameters to match your learning goals
+            </p>
+          </div>
+
+          <div id="config-error-alert" class="alert alert-error hidden"></div>
+
+          <div class="card">
+            <div class="form-group">
+              <label class="form-label" for="num-questions"
+                >Number of Questions</label
+              >
+              <input
+                type="number"
+                id="num-questions"
+                class="form-input"
+                min="1"
+                max="50"
+                value="10"
+              />
+              <small style="color: #64748b; font-size: 0.875rem"
+                >Choose between 1-50 questions</small
+              >
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="difficulty"
+                >Difficulty Level</label
+              >
+              <select id="difficulty" class="form-select">
+                <option value="easy">
+                  Easy - Basic concepts and definitions
+                </option>
+                <option value="medium" selected>
+                  Medium - Application and analysis
+                </option>
+                <option value="hard">
+                  Hard - Critical thinking and synthesis
+                </option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="quiz-time">Quiz Time Limit</label>
+              <select id="quiz-time" class="form-select">
+                <option value="0">No Time Limit</option>
+                <option value="5">5 Minutes</option>
+                <option value="10" selected>10 Minutes</option>
+                <option value="15">15 Minutes</option>
+                <option value="20">20 Minutes</option>
+                <option value="30">30 Minutes</option>
+                <option value="45">45 Minutes</option>
+                <option value="60">1 Hour</option>
+              </select>
+              <small style="color: #64748b; font-size: 0.875rem"
+                >Set a time limit to challenge yourself</small
+              >
+            </div>
+
+            <button
+              id="generate-quiz-btn"
+              class="btn btn-primary"
+              style="width: 100%"
+            >
+              <span id="generate-text">Generate Quiz</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Setup Page -->
+    <div id="setup-page" class="container hidden">
+      <div class="page-wrapper">
+        <div class="page-content">
+          <div class="header">
+            <svg class="icon icon-secondary" viewBox="0 0 24 24">
+              <polygon points="5,3 19,12 5,21 5,3"></polygon>
+            </svg>
+            <h2>Quiz Ready!</h2>
+            <p class="subtitle">
+              Your personalized quiz has been generated successfully
+            </p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <p class="form-label">Questions</p>
+              <p id="question-count" class="stat-value">0</p>
+            </div>
+            <div class="stat-card">
+              <p class="form-label">Difficulty</p>
+              <p
+                id="difficulty-display"
+                class="stat-value"
+                style="text-transform: capitalize"
+              >
+                Medium
+              </p>
+            </div>
+            <div class="stat-card">
+              <p class="form-label">Time Limit</p>
+              <p id="time-limit-display" class="stat-value">10 min</p>
+            </div>
+          </div>
+
+          <div class="text-center">
+            <button
+              id="start-quiz-btn"
+              class="btn btn-secondary"
+              style="font-size: 1.125rem; padding: 1rem 3rem"
+            >
+              Start Your Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quiz Player Page -->
+    <div id="player-page" class="container hidden">
+      <div class="page-wrapper">
+        <div class="page-content">
+          <div class="progress-container">
+            <div class="progress-header">
+              <span id="question-progress" class="text-sm font-medium"
+                >Question 1 of 10</span
+              >
+              <div class="timer-section">
+                <div id="timer-display" class="timer-display hidden">
+                  <svg
+                    class="timer-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12,6 12,12 16,14"></polyline>
+                  </svg>
+                  <span id="timer-text">10:00</span>
+                </div>
+                <button id="end-quiz-btn" class="end-quiz-btn">
+                  <svg
+                    class="end-quiz-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect
+                      x="3"
+                      y="3"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      ry="2"
+                    ></rect>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                  </svg>
+                  End Quiz
+                </button>
+              </div>
+            </div>
+            <div class="progress-bar">
+              <div
+                id="progress-fill"
+                class="progress-fill"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+
+          <div class="question-container">
+            <h3 id="current-question" class="question-text">
+              Question will appear here
+            </h3>
+
+            <div id="question-options" class="question-options">
+              <!-- Options will be populated by JavaScript -->
+            </div>
+
+            <div class="text-center">
+              <button id="next-question-btn" class="btn btn-primary" disabled>
+                <span id="next-text">Next Question</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Page -->
+    <div id="results-page" class="container hidden">
+      <div class="page-wrapper">
+        <div class="page-content">
+          <div class="header">
+            <svg class="icon icon-accent" viewBox="0 0 24 24">
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+              <path d="M14 9h1.5a2.5 2.5 0 0 1 0 5H14"></path>
+              <path d="M6 9v6"></path>
+              <path d="M14 9v6"></path>
+              <path d="M6 15h8"></path>
+            </svg>
+            <h2>Quiz Complete!</h2>
+            <p class="subtitle">
+              Here's your performance analysis and detailed results
+            </p>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <h3 class="form-label">Score</h3>
+              <p id="final-score" class="stat-value">0/10</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="form-label">Percentage</h3>
+              <p id="final-percentage" class="stat-value">0%</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="form-label">Grade</h3>
+              <p id="final-grade" class="stat-value">F</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="form-label">Time Taken</h3>
+              <p id="time-taken" class="stat-value">0:00</p>
+            </div>
+          </div>
+
+          <div class="answer-review">
+            <h3
+              style="
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 1.5rem;
+                color: var(--text-primary);
+              "
+            >
+              Detailed Answer Review
+            </h3>
+            <div id="answer-list">
+              <!-- Answers will be populated by JavaScript -->
+            </div>
+          </div>
+
+          <div class="text-center" style="margin-top: 2rem">
+            <button
+              id="reset-btn"
+              class="btn btn-primary"
+              style="padding: 1rem 2rem"
+            >
+              <svg
+                style="width: 1rem; height: 1rem; margin-right: 0.5rem"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <polyline points="1,4 1,10 7,10"></polyline>
+                <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+              </svg>
+              Create New Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Full Screen Timer Overlay -->
+    <div id="timer-overlay" class="timer-overlay">
+      <div class="timer-overlay-content">
+        <div id="timer-overlay-clock" class="timer-overlay-clock">
+          <svg
+            style="width: 4rem; height: 4rem; color: white"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12,6 12,12 16,14"></polyline>
+          </svg>
+        </div>
+        <div id="timer-overlay-time" class="timer-overlay-time">10:00</div>
+        <div id="timer-overlay-message" class="timer-overlay-message">
+          Time Remaining
+        </div>
+        <button id="timer-overlay-close" class="timer-overlay-close">
+          Continue Quiz
+        </button>
+      </div>
+    </div>
+
+    <!-- Time's Up Modal -->
+    <div id="time-up-modal" class="modal">
+      <div class="modal-content">
+        <svg
+          class="modal-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12,6 12,12 16,14"></polyline>
+        </svg>
+        <h3
+          style="
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+          "
+        >
+          Time's Up!
+        </h3>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+          Your quiz time has expired. Your answers have been automatically
+          submitted.
+        </p>
+        <button id="time-up-ok-btn" class="btn btn-primary">
+          View Results
+        </button>
+      </div>
+    </div>
+
+    <script src="../static/app.js"></script>
+    <!-- jsPDF for PDF export -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script> -->
+  </body>
+</html>
